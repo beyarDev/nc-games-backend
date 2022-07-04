@@ -31,6 +31,26 @@ describe("app", () => {
         });
     });
   });
+  describe("GET /api/reviews/:review_id", () => {
+    test("should return a review object with the specified properties", () => {
+      return request(app)
+        .get("/api/reviews/2")
+        .expect(200)
+        .then(({ body: { review } }) => {
+          expect(review).toEqual({
+            review_id: 2,
+            title: expect.any(String),
+            review_body: expect.any(String),
+            designer: expect.any(String),
+            review_img_url: expect.any(String),
+            votes: expect.any(Number),
+            category: expect.any(String),
+            owner: "philippaclaire9",
+            created_at: expect.any(String),
+          });
+        });
+    });
+  });
 });
 
 describe("app error handling", () => {
@@ -41,6 +61,26 @@ describe("app error handling", () => {
         .expect(404)
         .then(({ body: { msg } }) => {
           expect(msg).toBe("404 no such route");
+        });
+    });
+  });
+  describe("(GET /api/reviews/:review_id) passing invalid review id", () => {
+    test("should return a no content message when passed not existing id", () => {
+      return request(app)
+        .get("/api/reviews/10999")
+        .expect(404)
+        .then(({ body: { msg } }) => {
+          expect(msg).toBe("no review id = 10999");
+        });
+    });
+  });
+  describe("(GET /api/reviews/:review_id) passing invalid review id", () => {
+    test("should return a no content message when passed invalid review_id", () => {
+      return request(app)
+        .get("/api/reviews/beyar")
+        .expect(404)
+        .then(({ body: { msg } }) => {
+          expect(msg).toBe("invalid input");
         });
     });
   });

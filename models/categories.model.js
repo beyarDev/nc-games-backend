@@ -9,4 +9,16 @@ exports.fetchCategories = () => {
     });
 };
 
-
+exports.fetchReviewById = (id) => {
+  return db
+    .query("SELECT * FROM reviews WHERE review_id = $1", [id])
+    .then(({ rows, rowCount }) => {
+      if (rowCount === 0) {
+        return Promise.reject({
+          status: 404,
+          msg: `no review id = ${id}`,
+        });
+      }
+      return rows[0];
+    });
+};

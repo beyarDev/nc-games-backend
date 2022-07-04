@@ -8,3 +8,5 @@ exports.fetchCategories = () => {
       return rows;
     });
 };
+
+

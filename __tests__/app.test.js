@@ -47,7 +47,16 @@ describe("app", () => {
             category: expect.any(String),
             owner: "philippaclaire9",
             created_at: expect.any(String),
+            comment_count: "3",
           });
+        });
+    });
+    test("should return a review object with comment count equal to zero if no comments", () => {
+      return request(app)
+        .get("/api/reviews/7")
+        .expect(200)
+        .then(({ body: { review } }) => {
+          expect(review.comment_count).toBe("0");
         });
     });
   });

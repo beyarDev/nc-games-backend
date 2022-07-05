@@ -167,6 +167,32 @@ describe("app", () => {
       expect(reviews).toBeSortedBy("created_at", { descending: true });
     });
   });
+  describe("GET /api/reviews/:review_id/comments", () => {
+    test("should return an array of comments for the given review ID", async () => {
+      const {
+        body: { comments },
+      } = await request(app).get("/api/reviews/2/comments").expect(200);
+      expect(comments).toHaveLength(3);
+      comments.forEach((comment) => {
+        expect(comment).toEqual(
+          expect.objectContaining({
+            comment_id: expect.any(Number),
+            votes: expect.any(Number),
+            created_at: expect.any(String),
+            author: expect.any(String),
+            body: expect.any(String),
+            review_id: 2,
+          })
+        );
+      });
+    });
+    test("should return an empty array if no comments found the given review ID", async () => {
+      const {
+        body: { comments },
+      } = await request(app).get("/api/reviews/1/comments").expect(200);
+      expect(comments).toEqual([]);
+    });
+  });
 });
 
 // error handling tests
@@ -196,7 +222,7 @@ describe("app error handling", () => {
         .get("/api/reviews/beyar")
         .expect(400)
         .then(({ body: { msg } }) => {
-          expect(msg).toBe("invalid input");
+          expect(msg).toBe("invalid input ID (beyar)");
         });
     });
   });
@@ -236,6 +262,20 @@ describe("app error handling", () => {
         .then(({ body: { msg } }) => {
           expect(msg).toBe("please input valid inc_votes value");
         });
+    });
+  });
+  describe("GET /api/reviews/:review_id/comments error handler", () => {
+    test("should return 404 not found when there is no no such review id", async () => {
+      const {
+        body: { msg },
+      } = await request(app).get("/api/reviews/9999/comments").expect(404);
+      expect(msg).toBe("there is no 9999 review id");
+    });
+    test("should return 400 bad request when passed invalid review id", async () => {
+      const {
+        body: { msg },
+      } = await request(app).get("/api/reviews/beyar/comments").expect(400);
+      expect(msg).toBe("invalid review ID (beyar)");
     });
   });
 });

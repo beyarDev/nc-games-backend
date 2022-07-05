@@ -6,6 +6,7 @@ const {
   changeReviewVote,
   getUsers,
   getReviews,
+  getCommentsByReviewId,
 } = require("./controllers/categories.controller");
 
 // routes
@@ -15,7 +16,7 @@ app.get("/api/categories", getCategories);
 app.get("/api/reviews/:review_id", getReviewById);
 app.patch("/api/reviews/:review_id", changeReviewVote);
 app.get("/api/reviews", getReviews);
-
+app.get("/api/reviews/:review_id/comments", getCommentsByReviewId);
 // error handlers
 app.use("*", (req, res) => {
   res.status(404).send({ msg: "404 no such route" });
@@ -24,8 +25,6 @@ app.use("*", (req, res) => {
 app.use((err, req, res, next) => {
   if (err.msg) {
     res.status(err.status).send({ msg: err.msg });
-  } else if (err.code === "22P02") {
-    res.status(400).send({ msg: "invalid input" });
   } else if (err.code) {
     console.log(err);
     res.status(400).send({ msg: "invalid input" });

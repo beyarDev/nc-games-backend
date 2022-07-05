@@ -2,7 +2,7 @@ const {
   fetchCategories,
   fetchReviewById,
   updateReviewVoteById,
-  fetchUsers,
+  fetchUsers, fetchReviews
 } = require("../models/categories.model");
 
 exports.getCategories = (req, res, next) => {
@@ -47,3 +47,12 @@ exports.getUsers = (req, res, next) => {
       next(er);
     });
 };
+
+exports.getReviews = (async(req,res,next)=>{
+  try {
+    const reviews = await fetchReviews();
+    res.status(200).send({reviews})
+  } catch (error) {
+    next(err)
+  }
+})

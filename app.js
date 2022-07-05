@@ -3,14 +3,20 @@ const app = express();
 const {
   getCategories,
   getReviewById,
-  changeReviewVote,getUsers
+  changeReviewVote,
+  getUsers,
+  getReviews,
 } = require("./controllers/categories.controller");
 
+// routes
 app.use(express.json());
 app.get("/api/users", getUsers);
 app.get("/api/categories", getCategories);
 app.get("/api/reviews/:review_id", getReviewById);
 app.patch("/api/reviews/:review_id", changeReviewVote);
+app.get("/api/reviews", getReviews);
+
+// error handlers
 app.use("*", (req, res) => {
   res.status(404).send({ msg: "404 no such route" });
 });

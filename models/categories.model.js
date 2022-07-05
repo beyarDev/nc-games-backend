@@ -94,3 +94,10 @@ exports.fetchCommentsByReviewId = async (reviewId) => {
     });
   }
 };
+
+exports.addCommentsByReviewId = async (username, body, reviewId) => {
+  const queryStr = `INSERT INTO comments (author, body, review_id)
+  VALUES ($1, $2, $3) RETURNING *;`;
+  const { rows } = await db.query(queryStr, [username, body, reviewId]);
+  return rows[0];
+};

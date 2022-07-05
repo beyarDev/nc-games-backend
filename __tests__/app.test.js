@@ -193,6 +193,23 @@ describe("app", () => {
       expect(comments).toEqual([]);
     });
   });
+  describe("POST /api/reviews/:review_id/comments", () => {
+    test("should post a new comment and return it", async () => {
+      const {
+        body: { comment },
+      } = await request(app)
+        .post("/api/reviews/1/comments")
+        .send({ username: "bainesface", body: "what an awesome game" })
+        .expect(201);
+      expect(comment).toEqual(
+        expect.objectContaining({
+          author: "bainesface",
+          body: "what an awesome game",
+          review_id: 1,
+        })
+      );
+    });
+  });
 });
 
 // error handling tests

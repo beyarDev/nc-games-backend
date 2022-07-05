@@ -295,4 +295,42 @@ describe("app error handling", () => {
       expect(msg).toBe("invalid review ID (beyar)");
     });
   });
+  describe("POST /api/reviews/:review_id/comments error handler", () => {
+    test("return 404 review id does not exist", async () => {
+      const {
+        body: { msg },
+      } = await request(app)
+        .post("/api/reviews/999/comments")
+        .send({ username: "bainesface", body: "what an awesome game" })
+        .expect(404);
+      expect(msg).toBe("review ID 999 does not exist");
+    });
+    test("return 400 invalid review id", async () => {
+      const {
+        body: { msg },
+      } = await request(app)
+        .post("/api/reviews/banana/comments")
+        .send({ username: "bainesface", body: "what an awesome game" })
+        .expect(400);
+      expect(msg).toBe("invalid review ID (banana)");
+    });
+    test("return 404 username does not exsit", async () => {
+      const {
+        body: { msg },
+      } = await request(app)
+        .post("/api/reviews/1/comments")
+        .send({ username: "beyar", body: "what an awesome game" })
+        .expect(404);
+      expect(msg).toBe("user name beyar does not exist");
+    });
+    test("return 400 bad request no body", async () => {
+      const {
+        body: { msg },
+      } = await request(app)
+        .post("/api/reviews/1/comments")
+        .send({ username: "beyar" })
+        .expect(400);
+      expect(msg).toBe("please provide comment body");
+    });
+  });
 });

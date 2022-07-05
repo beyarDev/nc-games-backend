@@ -96,8 +96,41 @@ exports.fetchCommentsByReviewId = async (reviewId) => {
 };
 
 exports.addCommentsByReviewId = async (username, body, reviewId) => {
-  const queryStr = `INSERT INTO comments (author, body, review_id)
+  if (isNaN(Number(reviewId))) {
+    return Promise.reject({
+      status: 400,
+      msg: `invalid review ID (${reviewId})`,
+    });
+  }
+  if (body === undefined) {
+    return Promise.reject({
+      status: 400,
+      msg: "please provide comment body",
+    });
+  }
+  const { rowCount } = await db.query(
+    "SELECT * FROM reviews WHERE review_id = $1",
+    [reviewId]
+  );
+  if (rowCount) {
+    const authors = await db.query("SELECT * FROM users WHERE username = $1", [
+      username,
+    ]);
+    if (authors.rowCount) {
+      const queryStr = `INSERT INTO comments (author, body, review_id)
   VALUES ($1, $2, $3) RETURNING *;`;
-  const { rows } = await db.query(queryStr, [username, body, reviewId]);
-  return rows[0];
+      const { rows } = await db.query(queryStr, [username, body, reviewId]);
+      return rows[0];
+    } else {
+      return Promise.reject({
+        status: 404,
+        msg: `user name ${username} does not exist`,
+      });
+    }
+  } else {
+    return Promise.reject({
+      status: 404,
+      msg: `review ID ${reviewId} does not exist`,
+    });
+  }
 };

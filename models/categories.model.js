@@ -65,3 +65,21 @@ exports.fetchReviews = async () => {
   const { rows } = await db.query(queryStr);
   return rows;
 };
+
+exports.fetchCommentsByReviewId = async (reviewId) => {
+  if (isNaN(Number(reviewId))) {
+    return Promise.reject({
+      status: 400,
+      msg: `invalid review ID (${reviewId})`,
+    });
+  }
+  const queryStr = `SELECT * FROM comments WHERE comments.review_id = $1`;
+  const { rows, rowCount } = await db.query(queryStr, [reviewId]);
+  if (rowCount === 0) {
+    return Promise.reject({
+      status: 404,
+      msg: `no comments with ${reviewId} review id`,
+    });
+  }
+  return rows;
+};

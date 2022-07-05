@@ -2,7 +2,9 @@ const {
   fetchCategories,
   fetchReviewById,
   updateReviewVoteById,
-  fetchUsers, fetchReviews
+  fetchUsers,
+  fetchReviews,
+  fetchCommentsByReviewId,
 } = require("../models/categories.model");
 
 exports.getCategories = (req, res, next) => {
@@ -48,11 +50,21 @@ exports.getUsers = (req, res, next) => {
     });
 };
 
-exports.getReviews = (async(req,res,next)=>{
+exports.getReviews = async (req, res, next) => {
   try {
     const reviews = await fetchReviews();
-    res.status(200).send({reviews})
+    res.status(200).send({ reviews });
   } catch (error) {
-    next(err)
+    next(err);
   }
-})
+};
+
+exports.getCommentsByReviewId = async (req, res, next) => {
+  const { review_id } = req.params;
+  try {
+    const comments = await fetchCommentsByReviewId(review_id);
+    res.status(200).send({ comments });
+  } catch (err) {
+    next(err);
+  }
+};

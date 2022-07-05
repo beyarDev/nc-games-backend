@@ -52,7 +52,7 @@ describe("app", () => {
     });
   });
   describe("PATCH /api/reviews/:review_id", () => {
-    test("should update review vote", () => {
+    test("should add review votes when passed positive votes", () => {
       return request(app)
         .patch("/api/reviews/1")
         .send({ inc_votes: 1 })
@@ -72,12 +72,12 @@ describe("app", () => {
           });
         });
     });
-    test("should update review vote and ignore extra keys", async () => {
+    test("should subtract review votes when passed negative votes", async () => {
       const {
         body: { review },
       } = await request(app)
         .patch("/api/reviews/1")
-        .send({ inc_votes: -10, name: "Mitch" })
+        .send({ inc_votes: -10 })
         .expect(200);
       expect(review).toEqual({
         review_id: 1,
@@ -90,6 +90,26 @@ describe("app", () => {
         category: "euro game",
         created_at: expect.any(String),
         votes: -9,
+      });
+    });
+    test("should ignore extra keys", async () => {
+      const {
+        body: { review },
+      } = await request(app)
+        .patch("/api/reviews/1")
+        .send({ inc_votes: 1, name: "Mitch" })
+        .expect(200);
+      expect(review).toEqual({
+        review_id: 1,
+        title: "Agricola",
+        designer: "Uwe Rosenberg",
+        owner: "mallionaire",
+        review_img_url:
+          "https://www.golenbock.com/wp-content/uploads/2015/01/placeholder-user.png",
+        review_body: "Farmyard fun!",
+        category: "euro game",
+        created_at: expect.any(String),
+        votes: 2,
       });
     });
   });

@@ -51,7 +51,71 @@ describe("app", () => {
         });
     });
   });
+  describe("PATCH /api/reviews/:review_id", () => {
+    test("should add review votes when passed positive votes", () => {
+      return request(app)
+        .patch("/api/reviews/1")
+        .send({ inc_votes: 1 })
+        .expect(200)
+        .then(({ body: { review } }) => {
+          expect(review).toEqual({
+            review_id: 1,
+            title: "Agricola",
+            designer: "Uwe Rosenberg",
+            owner: "mallionaire",
+            review_img_url:
+              "https://www.golenbock.com/wp-content/uploads/2015/01/placeholder-user.png",
+            review_body: "Farmyard fun!",
+            category: "euro game",
+            created_at: expect.any(String),
+            votes: 2,
+          });
+        });
+    });
+    test("should subtract review votes when passed negative votes", async () => {
+      const {
+        body: { review },
+      } = await request(app)
+        .patch("/api/reviews/1")
+        .send({ inc_votes: -10 })
+        .expect(200);
+      expect(review).toEqual({
+        review_id: 1,
+        title: "Agricola",
+        designer: "Uwe Rosenberg",
+        owner: "mallionaire",
+        review_img_url:
+          "https://www.golenbock.com/wp-content/uploads/2015/01/placeholder-user.png",
+        review_body: "Farmyard fun!",
+        category: "euro game",
+        created_at: expect.any(String),
+        votes: -9,
+      });
+    });
+    test("should ignore extra keys", async () => {
+      const {
+        body: { review },
+      } = await request(app)
+        .patch("/api/reviews/1")
+        .send({ inc_votes: 1, name: "Mitch" })
+        .expect(200);
+      expect(review).toEqual({
+        review_id: 1,
+        title: "Agricola",
+        designer: "Uwe Rosenberg",
+        owner: "mallionaire",
+        review_img_url:
+          "https://www.golenbock.com/wp-content/uploads/2015/01/placeholder-user.png",
+        review_body: "Farmyard fun!",
+        category: "euro game",
+        created_at: expect.any(String),
+        votes: 2,
+      });
+    });
+  });
 });
+
+// error handling tests
 
 describe("app error handling", () => {
   describe("invalid path", () => {
@@ -64,7 +128,7 @@ describe("app error handling", () => {
         });
     });
   });
-  describe("(GET /api/reviews/:review_id) passing invalid review id", () => {
+  describe("(GET /api/reviews/:review_id) error handler", () => {
     test("should return a no content message when passed not existing id", () => {
       return request(app)
         .get("/api/reviews/10999")
@@ -73,14 +137,50 @@ describe("app error handling", () => {
           expect(msg).toBe("no review id = 10999");
         });
     });
-  });
-  describe("(GET /api/reviews/:review_id) passing invalid review id", () => {
     test("should return a no content message when passed invalid review_id", () => {
       return request(app)
         .get("/api/reviews/beyar")
-        .expect(404)
+        .expect(400)
         .then(({ body: { msg } }) => {
           expect(msg).toBe("invalid input");
+        });
+    });
+  });
+  describe("(PATH /api/reviews/:review_id) error handler", () => {
+    test("should return a no content message when passed invalid review_id", () => {
+      return request(app)
+        .patch("/api/reviews/beyar")
+        .send({ inc_votes: 1 })
+        .expect(400)
+        .then(({ body: { msg } }) => {
+          expect(msg).toBe("invalid input");
+        });
+    });
+    test("should return 404 when passed a review_id that does not exist", () => {
+      return request(app)
+        .patch("/api/reviews/10009")
+        .send({ inc_votes: 1 })
+        .expect(404)
+        .then(({ body: { msg } }) => {
+          expect(msg).toBe("no review id = 10009");
+        });
+    });
+    test("should return 400 when No `inc_votes`", () => {
+      return request(app)
+        .patch("/api/reviews/1")
+        .send({})
+        .expect(400)
+        .then(({ body: { msg } }) => {
+          expect(msg).toBe("please input valid inc_votes value");
+        });
+    });
+    test("should return 400 when passed Invalid inc_votes", () => {
+      return request(app)
+        .patch("/api/reviews/1")
+        .send({ inc_votes: "cat" })
+        .expect(400)
+        .then(({ body: { msg } }) => {
+          expect(msg).toBe("please input valid inc_votes value");
         });
     });
   });

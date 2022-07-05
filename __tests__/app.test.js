@@ -160,6 +160,12 @@ describe("app", () => {
         );
       });
     });
+    test("should return all reviews sorted by date DESC", async () => {
+      const {
+        body: { reviews },
+      } = await request(app).get("/api/reviews").expect(200);
+      expect(reviews).toBeSortedBy("created_at", { descending: true });
+    });
   });
 });
 

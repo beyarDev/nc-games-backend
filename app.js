@@ -3,11 +3,11 @@ const app = express();
 const {
   getCategories,
   getReviewById,
-  changeReviewVote,
+  changeReviewVote,getUsers
 } = require("./controllers/categories.controller");
 
 app.use(express.json());
-
+app.get("/api/users", getUsers);
 app.get("/api/categories", getCategories);
 app.get("/api/reviews/:review_id", getReviewById);
 app.patch("/api/reviews/:review_id", changeReviewVote);

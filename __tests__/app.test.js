@@ -51,6 +51,7 @@ describe("app", () => {
         });
     });
   });
+
   describe("PATCH /api/reviews/:review_id", () => {
     test("should add review votes when passed positive votes", () => {
       return request(app)
@@ -110,6 +111,21 @@ describe("app", () => {
         category: "euro game",
         created_at: expect.any(String),
         votes: 2,
+      });
+    });
+    describe("GET /api/users", () => {
+      test("should return an array of all users", async () => {
+        const { body } = await request(app).get("/api/users").expect(200);
+        expect(body.users).toHaveLength(4);
+        body.users.forEach((user) => {
+          expect(user).toEqual(
+            expect.objectContaining({
+              username: expect.any(String),
+              name: expect.any(String),
+              avatar_url: expect.any(String),
+            })
+          );
+        });
       });
     });
   });

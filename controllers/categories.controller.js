@@ -2,6 +2,7 @@ const {
   fetchCategories,
   fetchReviewById,
   updateReviewVoteById,
+  fetchUsers,
 } = require("../models/categories.model");
 
 exports.getCategories = (req, res, next) => {
@@ -34,5 +35,15 @@ exports.changeReviewVote = (req, res, next) => {
     })
     .catch((err) => {
       next(err);
+    });
+};
+
+exports.getUsers = (req, res, next) => {
+  fetchUsers()
+    .then((users) => {
+      res.status(200).send({ users });
+    })
+    .catch((err) => {
+      next(er);
     });
 };

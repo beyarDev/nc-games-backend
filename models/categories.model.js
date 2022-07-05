@@ -57,3 +57,11 @@ exports.fetchUsers = async () => {
   const { rows } = await db.query(queryStr);
   return rows;
 };
+
+exports.fetchReviews = async () => {
+  const queryStr = `SELECT reviews.*, COUNT(comments.review_id) AS comment_count FROM reviews
+  LEFT JOIN comments ON reviews.review_id = comments.review_id
+  GROUP BY reviews.review_id;`;
+  const { rows } = await db.query(queryStr);
+  return rows;
+};

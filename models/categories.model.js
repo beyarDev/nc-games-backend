@@ -10,6 +10,12 @@ exports.fetchCategories = () => {
 };
 
 exports.fetchReviewById = (id) => {
+  if (isNaN(Number(id))) {
+    return Promise.reject({
+      status: 400,
+      msg: `invalid input ID (${id})`,
+    });
+  }
   return db
     .query(
       `SELECT reviews.*, COUNT(comments.review_id) AS comment_count FROM reviews
@@ -73,13 +79,18 @@ exports.fetchCommentsByReviewId = async (reviewId) => {
       msg: `invalid review ID (${reviewId})`,
     });
   }
-  const queryStr = `SELECT * FROM comments WHERE comments.review_id = $1`;
-  const { rows, rowCount } = await db.query(queryStr, [reviewId]);
-  if (rowCount === 0) {
+  const { rows } = await db.query(
+    "SELECT review_id FROM reviews WHERE review_id = $1",
+    [reviewId]
+  );
+  if (rows.length) {
+    const queryStr = `SELECT * FROM comments WHERE comments.review_id = $1`;
+    const { rows } = await db.query(queryStr, [reviewId]);
+    return rows;
+  } else {
     return Promise.reject({
       status: 404,
-      msg: `no comments with ${reviewId} review id`,
+      msg: `there is no ${reviewId} review id`,
     });
   }
-  return rows;
 };

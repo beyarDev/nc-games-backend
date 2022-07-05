@@ -45,3 +45,9 @@ exports.updateReviewVoteById = (incVotes, reviewId) => {
       return rows[0];
     });
 };
+
+exports.fetchUsers = async () => {
+  const queryStr = "SELECT username, name, avatar_url FROM users";
+  const { rows } = await db.query(queryStr);
+  return rows;
+};

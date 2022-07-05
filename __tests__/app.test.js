@@ -113,22 +113,21 @@ describe("app", () => {
         votes: 2,
       });
     });
-    // describe("GET /api/users", () => {
-    //   test("should return an array of all users", async () => {
-    //     const { body } = await request(app).get("/api/users").expect(200);
-    //     expect(body.users).toHaveLength(4);
-    //     body.users.forEach((user) => {
-    //       expect(user).toEqual(
-    //         expect.objectContaining({
-    //           user_id: expect.any(Number),
-    //           username: expect.any(String),
-    //           name: expect.any(String),
-    //           avatar_url: expect.any(String),
-    //         })
-    //       );
-    //     });
-    //   });
-    // });
+    describe("GET /api/users", () => {
+      test("should return an array of all users", async () => {
+        const { body } = await request(app).get("/api/users").expect(200);
+        expect(body.users).toHaveLength(4);
+        body.users.forEach((user) => {
+          expect(user).toEqual(
+            expect.objectContaining({
+              username: expect.any(String),
+              name: expect.any(String),
+              avatar_url: expect.any(String),
+            })
+          );
+        });
+      });
+    });
   });
 });
 

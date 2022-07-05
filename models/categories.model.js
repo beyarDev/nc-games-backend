@@ -11,7 +11,13 @@ exports.fetchCategories = () => {
 
 exports.fetchReviewById = (id) => {
   return db
-    .query("SELECT * FROM reviews WHERE review_id = $1", [id])
+    .query(
+      `SELECT reviews.*, COUNT(comments.review_id) AS comment_count FROM reviews
+    LEFT JOIN comments ON reviews.review_id = comments.review_id
+    WHERE reviews.review_id = $1
+    GROUP BY reviews.review_id;`,
+      [id]
+    )
     .then(({ rows, rowCount }) => {
       if (rowCount === 0) {
         return Promise.reject({

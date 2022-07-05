@@ -47,6 +47,7 @@ describe("app", () => {
             category: expect.any(String),
             owner: "philippaclaire9",
             created_at: expect.any(String),
+            comment_count: '3',
           });
         });
     });

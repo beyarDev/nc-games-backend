@@ -18,13 +18,11 @@ app.use("*", (req, res) => {
 app.use((err, req, res, next) => {
   if (err.msg) {
     res.status(err.status).send({ msg: err.msg });
-  } else if (err.code === "23502") {
-    res.status(400).send({ msg: "please provide inc_votes" });
   } else if (err.code === "22P02") {
     res.status(400).send({ msg: "invalid input" });
   } else if (err.code) {
     console.log(err);
-    res.status(400).send({ msg: "invalid" });
+    res.status(400).send({ msg: "invalid input" });
   } else {
     next(err);
   }

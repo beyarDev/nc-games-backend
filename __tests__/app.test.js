@@ -72,6 +72,26 @@ describe("app", () => {
           });
         });
     });
+    test("should update review vote and ignore extra keys", async () => {
+      const {
+        body: { review },
+      } = await request(app)
+        .patch("/api/reviews/1")
+        .send({ inc_votes: -10, name: "Mitch" })
+        .expect(200);
+      expect(review).toEqual({
+        review_id: 1,
+        title: "Agricola",
+        designer: "Uwe Rosenberg",
+        owner: "mallionaire",
+        review_img_url:
+          "https://www.golenbock.com/wp-content/uploads/2015/01/placeholder-user.png",
+        review_body: "Farmyard fun!",
+        category: "euro game",
+        created_at: expect.any(String),
+        votes: -9,
+      });
+    });
   });
 });
 
@@ -131,7 +151,7 @@ describe("app error handling", () => {
         .send({})
         .expect(400)
         .then(({ body: { msg } }) => {
-          expect(msg).toBe("please provide inc_votes");
+          expect(msg).toBe("please input valid inc_votes value");
         });
     });
     test("should return 400 when passed Invalid inc_votes", () => {
@@ -140,7 +160,7 @@ describe("app error handling", () => {
         .send({ inc_votes: "cat" })
         .expect(400)
         .then(({ body: { msg } }) => {
-          expect(msg).toBe("invalid input");
+          expect(msg).toBe("please input valid inc_votes value");
         });
     });
   });

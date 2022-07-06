@@ -286,7 +286,7 @@ describe("app error handling", () => {
       const {
         body: { msg },
       } = await request(app).get("/api/reviews/9999/comments").expect(404);
-      expect(msg).toBe("there is no 9999 review id");
+      expect(msg).toBe("9999 does not exist");
     });
     test("should return 400 bad request when passed invalid review id", async () => {
       const {
@@ -303,7 +303,7 @@ describe("app error handling", () => {
         .post("/api/reviews/999/comments")
         .send({ username: "bainesface", body: "what an awesome game" })
         .expect(404);
-      expect(msg).toBe("review ID 999 does not exist");
+      expect(msg).toBe("999 does not exist");
     });
     test("return 400 invalid review id", async () => {
       const {
@@ -321,7 +321,7 @@ describe("app error handling", () => {
         .post("/api/reviews/1/comments")
         .send({ username: "beyar", body: "what an awesome game" })
         .expect(404);
-      expect(msg).toBe("user name beyar does not exist");
+      expect(msg).toBe("beyar does not exist");
     });
     test("return 400 bad request no body", async () => {
       const {

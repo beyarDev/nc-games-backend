@@ -1,4 +1,5 @@
 const db = require("../db/connection");
+const format = require("pg-format");
 
 exports.fetchCategories = () => {
   return db
@@ -79,20 +80,10 @@ exports.fetchCommentsByReviewId = async (reviewId) => {
       msg: `invalid review ID (${reviewId})`,
     });
   }
-  const { rows } = await db.query(
-    "SELECT review_id FROM reviews WHERE review_id = $1",
-    [reviewId]
-  );
-  if (rows.length) {
-    const queryStr = `SELECT * FROM comments WHERE comments.review_id = $1`;
-    const { rows } = await db.query(queryStr, [reviewId]);
-    return rows;
-  } else {
-    return Promise.reject({
-      status: 404,
-      msg: `there is no ${reviewId} review id`,
-    });
-  }
+  await this.checkExist("reviews", "review_id", reviewId);
+  const queryStr = `SELECT * FROM comments WHERE comments.review_id = $1`;
+  const { rows } = await db.query(queryStr, [reviewId]);
+  return rows;
 };
 
 exports.addCommentsByReviewId = async (username, body, reviewId) => {
@@ -108,29 +99,21 @@ exports.addCommentsByReviewId = async (username, body, reviewId) => {
       msg: "please provide comment body",
     });
   }
-  const { rowCount } = await db.query(
-    "SELECT * FROM reviews WHERE review_id = $1",
-    [reviewId]
-  );
-  if (rowCount) {
-    const authors = await db.query("SELECT * FROM users WHERE username = $1", [
-      username,
-    ]);
-    if (authors.rowCount) {
-      const queryStr = `INSERT INTO comments (author, body, review_id)
+  await this.checkExist("reviews", "review_id", reviewId);
+  await this.checkExist("users", "username", username);
+  const queryStr = `INSERT INTO comments (author, body, review_id)
   VALUES ($1, $2, $3) RETURNING *;`;
-      const { rows } = await db.query(queryStr, [username, body, reviewId]);
-      return rows[0];
-    } else {
-      return Promise.reject({
-        status: 404,
-        msg: `user name ${username} does not exist`,
-      });
-    }
-  } else {
+  const { rows } = await db.query(queryStr, [username, body, reviewId]);
+  return rows[0];
+};
+
+exports.checkExist = async (tableName, coloumn, value) => {
+  const queryStr = format("SELECT * FROM %I WHERE %I = $1", tableName, coloumn);
+  const outPutData = await db.query(queryStr, [value]);
+  if (!outPutData.rowCount) {
     return Promise.reject({
       status: 404,
-      msg: `review ID ${reviewId} does not exist`,
+      msg: `${value} does not exist`,
     });
   }
 };

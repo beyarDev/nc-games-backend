@@ -65,11 +65,7 @@ exports.fetchUsers = async () => {
   return rows;
 };
 
-exports.fetchReviews = async (
-  sort_by = "created_at",
-  order = "DESC",
-  category
-) => {
+exports.fetchReviews = async (sort_by, order, category) => {
   const values = [];
   const validOrders = ["ASC", "DESC"];
   const validSorts = [
@@ -93,9 +89,13 @@ exports.fetchReviews = async (
   queryStr += " GROUP BY reviews.review_id";
   if (validSorts.includes(sort_by)) {
     queryStr += ` ORDER BY reviews.${sort_by}`;
+  } else {
+    queryStr += ` ORDER BY reviews.created_at`;
   }
   if (validOrders.includes(order)) {
     queryStr += " " + order;
+  } else {
+    queryStr += " DESC";
   }
   if (values.length) {
     const { rows } = await db.query(queryStr, [category]);

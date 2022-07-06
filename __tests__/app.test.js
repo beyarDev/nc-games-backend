@@ -3,6 +3,7 @@ const seed = require("../db/seeds/seed");
 const testData = require("../db/data/test-data");
 const request = require("supertest");
 const app = require("../app");
+const reviews = require("../db/data/test-data/reviews");
 beforeEach(() => {
   return seed(testData).then(() => {});
 });
@@ -231,11 +232,21 @@ describe("app", () => {
         body: { reviews },
       } = await request(app)
         .get(
-          "/api/reviews?sort_by=review_id&&order=DESC&&category=social+deduction"
+          "/api/reviews?sort_by=review_id&&order=DESC&&category=social deduction"
         )
         .expect(200);
       expect(reviews.length).not.toBe(0);
+      console.log(reviews);
       expect(reviews).toBeSortedBy("review_id", { descending: true });
+    });
+    test("should ignore invalid queries and default to default query values", async () => {
+      const {
+        body: { reviews },
+      } = await request(app)
+        .get("/api/reviews?sort_by=fruits&&order=kiwi")
+        .expect(200);
+      expect(reviews.length).not.toBe(0);
+      expect(reviews).toBeSortedBy("created_at", { descending: true });
     });
   });
   describe("GET /api/reviews/:review_id/comments", () => {
@@ -402,6 +413,14 @@ describe("app error handling", () => {
         .send({ username: "beyar" })
         .expect(400);
       expect(msg).toBe("please provide comment body");
+    });
+  });
+  describe("GET /api/reviews featured requests", () => {
+    test("should return 404 when the category does not exist in category tables", async () => {
+      const {
+        body: { msg },
+      } = await request(app).get("/api/reviews?category=tomato").expect(404);
+      expect(msg).toBe("tomato does not exist");
     });
   });
 });

@@ -217,6 +217,26 @@ describe("app", () => {
         });
       });
     });
+    test("should return empty array if no reviews found with the queried category, but the category exist in category tables", async () => {
+      const {
+        body: { reviews },
+      } = await request(app)
+        .get("/api/reviews?category=children's+games")
+        .expect(200);
+      expect(reviews.length).toBe(0);
+      expect(reviews).toEqual([]);
+    });
+    test("pass all queries sort_by, order and category", async () => {
+      const {
+        body: { reviews },
+      } = await request(app)
+        .get(
+          "/api/reviews?sort_by=review_id&&order=DESC&&category=social+deduction"
+        )
+        .expect(200);
+      expect(reviews.length).not.toBe(0);
+      expect(reviews).toBeSortedBy("review_id", { descending: true });
+    });
   });
   describe("GET /api/reviews/:review_id/comments", () => {
     test("should return an array of comments for the given review ID", async () => {

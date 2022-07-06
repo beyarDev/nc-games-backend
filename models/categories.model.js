@@ -65,24 +65,42 @@ exports.fetchUsers = async () => {
   return rows;
 };
 
-exports.fetchReviews = async (sort_by = 'created_at', order = 'DESC', category) => {
-
-  const validOrders = ['ASC', 'DESC'];
-  const validSorts = ['review_id','title', 'category', 'designer', 'owner', 'review_body', 'review_img_url', 'created_at', 'votes']
+exports.fetchReviews = async (
+  sort_by = "created_at",
+  order = "DESC",
+  category
+) => {
+  const values = [];
+  const validOrders = ["ASC", "DESC"];
+  const validSorts = [
+    "review_id",
+    "title",
+    "category",
+    "designer",
+    "owner",
+    "review_body",
+    "review_img_url",
+    "created_at",
+    "votes",
+  ];
   let queryStr = `SELECT reviews.*, COUNT(comments.review_id) AS comment_count FROM reviews
-  LEFT JOIN comments ON reviews.review_id = comments.review_id
-  GROUP BY reviews.review_id`;
-  if(validSorts.includes(sort_by)){
-    queryStr += ` ORDER BY reviews.${sort_by}`
-    
+  LEFT JOIN comments ON reviews.review_id = comments.review_id`;
+  if (category) {
+    await this.checkExist("categories", "slug", category);
+    queryStr += " WHERE reviews.category = $1";
+    values.push(category);
   }
-  if(validOrders.includes(order)){
-    queryStr += ' ' + order
+  queryStr += " GROUP BY reviews.review_id";
+  if (validSorts.includes(sort_by)) {
+    queryStr += ` ORDER BY reviews.${sort_by}`;
   }
-  // if(category){
-  //   await this.checkExist('categories', 'slug', category);
-  //   queryStr += 'WHERE reviews.category = $1'
-  // }
+  if (validOrders.includes(order)) {
+    queryStr += " " + order;
+  }
+  if (values.length) {
+    const { rows } = await db.query(queryStr, [category]);
+    return rows;
+  }
   const { rows } = await db.query(queryStr);
   return rows;
 };

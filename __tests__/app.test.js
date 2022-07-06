@@ -164,38 +164,58 @@ describe("app", () => {
       const {
         body: { reviews },
       } = await request(app).get("/api/reviews").expect(200);
-      expect(reviews.length).not.toBe(0)
+      expect(reviews.length).not.toBe(0);
       expect(reviews).toBeSortedBy("created_at", { descending: true });
     });
     test("sort_by, which sorts the reviews by any valid column", async () => {
       const {
         body: { reviews },
       } = await request(app).get("/api/reviews?sort_by=votes").expect(200);
-      expect(reviews.length).not.toBe(0)
+      expect(reviews.length).not.toBe(0);
       expect(reviews).toBeSortedBy("votes", { descending: true });
     });
     test("sort_by, which sorts the reviews by any valid column", async () => {
       const {
         body: { reviews },
       } = await request(app).get("/api/reviews?sort_by=designer").expect(200);
-      expect(reviews.length).not.toBe(0)
+      expect(reviews.length).not.toBe(0);
       expect(reviews).toBeSortedBy("designer", { descending: true });
     });
     test("order, which order the reviews in ASC or DESC , DESC defalut by created_at defualt", async () => {
       const {
         body: { reviews },
       } = await request(app).get("/api/reviews?order=ASC").expect(200);
-      expect(reviews.length).not.toBe(0)
+      expect(reviews.length).not.toBe(0);
       expect(reviews).toBeSortedBy("created_at");
     });
-    test("sort_by, and order the articles by any valid column", async () => {
+    test("sort_by, and order the reviews by any valid column", async () => {
       const {
         body: { reviews },
       } = await request(app)
         .get("/api/reviews?sort_by=review_id&&order=ASC")
         .expect(200);
-      expect(reviews.length).not.toBe(0)
+      expect(reviews.length).not.toBe(0);
       expect(reviews).toBeSortedBy("review_id");
+    });
+    test("filter the reviews by givin category", async () => {
+      const {
+        body: { reviews },
+      } = await request(app).get("/api/reviews?category=euro+game").expect(200);
+      expect(reviews.length).not.toBe(0);
+      reviews.forEach((review) => {
+        expect(review).toEqual({
+          title: expect.any(String),
+          designer: expect.any(String),
+          owner: expect.any(String),
+          review_img_url: expect.any(String),
+          review_body: expect.any(String),
+          category: "euro game",
+          created_at: expect.any(String),
+          votes: expect.any(Number),
+          comment_count: expect.any(String),
+          review_id: expect.any(Number),
+        });
+      });
     });
   });
   describe("GET /api/reviews/:review_id/comments", () => {

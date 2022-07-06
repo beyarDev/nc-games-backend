@@ -5,6 +5,7 @@ const {
   fetchUsers,
   fetchReviews,
   fetchCommentsByReviewId,
+  addCommentsByReviewId,
 } = require("../models/categories.model");
 
 exports.getCategories = (req, res, next) => {
@@ -64,6 +65,17 @@ exports.getCommentsByReviewId = async (req, res, next) => {
   try {
     const comments = await fetchCommentsByReviewId(review_id);
     res.status(200).send({ comments });
+  } catch (err) {
+    next(err);
+  }
+};
+
+exports.postCommentsByReviewId = async (req, res, next) => {
+  const { review_id } = req.params;
+  const { username, body } = req.body;
+  try {
+    const comment = await addCommentsByReviewId(username, body, review_id);
+    res.status(201).send({ comment });
   } catch (err) {
     next(err);
   }

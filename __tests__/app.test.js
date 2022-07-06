@@ -193,7 +193,7 @@ describe("app", () => {
       const {
         body: { reviews },
       } = await request(app)
-        .get("/api/reviews?sort_by=review_id&&order=ASC")
+        .get("/api/reviews?sort_by=review_id&order=ASC")
         .expect(200);
       expect(reviews.length).not.toBe(0);
       expect(reviews).toBeSortedBy("review_id");
@@ -232,18 +232,17 @@ describe("app", () => {
         body: { reviews },
       } = await request(app)
         .get(
-          "/api/reviews?sort_by=review_id&&order=DESC&&category=social deduction"
+          "/api/reviews?sort_by=review_id&order=DESC&category=social deduction"
         )
         .expect(200);
       expect(reviews.length).not.toBe(0);
-      console.log(reviews);
       expect(reviews).toBeSortedBy("review_id", { descending: true });
     });
     test("should ignore invalid queries and default to default query values", async () => {
       const {
         body: { reviews },
       } = await request(app)
-        .get("/api/reviews?sort_by=fruits&&order=kiwi")
+        .get("/api/reviews?sort_by=fruits&order=kiwi")
         .expect(200);
       expect(reviews.length).not.toBe(0);
       expect(reviews).toBeSortedBy("created_at", { descending: true });
@@ -332,7 +331,7 @@ describe("app error handling", () => {
         .send({ inc_votes: 1 })
         .expect(400)
         .then(({ body: { msg } }) => {
-          expect(msg).toBe("invalid input");
+          expect(msg).toBe("invalid input ID (beyar)");
         });
     });
     test("should return 404 when passed a review_id that does not exist", () => {

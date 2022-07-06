@@ -3,7 +3,7 @@ const seed = require("../db/seeds/seed");
 const testData = require("../db/data/test-data");
 const request = require("supertest");
 const app = require("../app");
-const reviews = require("../db/data/test-data/reviews");
+
 beforeEach(() => {
   return seed(testData).then(() => {});
 });
@@ -156,7 +156,7 @@ describe("app", () => {
             category: expect.any(String),
             owner: expect.any(String),
             created_at: expect.any(String),
-            comment_count: expect.any(String),
+            comment_count: expect.any(Number),
           })
         );
       });
@@ -165,7 +165,7 @@ describe("app", () => {
       const {
         body: { reviews },
       } = await request(app).get("/api/reviews").expect(200);
-      expect(reviews.length).not.toBe(0);
+      expect(reviews.length).toBe(13);
       expect(reviews).toBeSortedBy("created_at", { descending: true });
     });
     test("sort_by, which sorts the reviews by any valid column", async () => {
@@ -213,7 +213,7 @@ describe("app", () => {
           category: "euro game",
           created_at: expect.any(String),
           votes: expect.any(Number),
-          comment_count: expect.any(String),
+          comment_count: expect.any(Number),
           review_id: expect.any(Number),
         });
       });

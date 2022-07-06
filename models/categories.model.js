@@ -79,7 +79,7 @@ exports.fetchReviews = async (sort_by, order, category) => {
     "created_at",
     "votes",
   ];
-  let queryStr = `SELECT reviews.*, COUNT(comments.review_id) AS comment_count FROM reviews
+  let queryStr = `SELECT reviews.*, CAST(COUNT(comments.review_id) AS INT) AS comment_count FROM reviews
   LEFT JOIN comments ON reviews.review_id = comments.review_id`;
   if (category) {
     await this.checkExist("categories", "slug", category);

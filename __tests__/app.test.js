@@ -3,6 +3,7 @@ const seed = require("../db/seeds/seed");
 const testData = require("../db/data/test-data");
 const request = require("supertest");
 const app = require("../app");
+
 beforeEach(() => {
   return seed(testData).then(() => {});
 });
@@ -155,15 +156,95 @@ describe("app", () => {
             category: expect.any(String),
             owner: expect.any(String),
             created_at: expect.any(String),
-            comment_count: expect.any(String),
+            comment_count: expect.any(Number),
           })
         );
       });
     });
-    test("should return all reviews sorted by date DESC", async () => {
+    test("should return all reviews sorted by date DESC defalut", async () => {
       const {
         body: { reviews },
       } = await request(app).get("/api/reviews").expect(200);
+      expect(reviews.length).toBe(13);
+      expect(reviews).toBeSortedBy("created_at", { descending: true });
+    });
+    test("sort_by, which sorts the reviews by any valid column", async () => {
+      const {
+        body: { reviews },
+      } = await request(app).get("/api/reviews?sort_by=votes").expect(200);
+      expect(reviews.length).not.toBe(0);
+      expect(reviews).toBeSortedBy("votes", { descending: true });
+    });
+    test("sort_by, which sorts the reviews by any valid column", async () => {
+      const {
+        body: { reviews },
+      } = await request(app).get("/api/reviews?sort_by=designer").expect(200);
+      expect(reviews.length).not.toBe(0);
+      expect(reviews).toBeSortedBy("designer", { descending: true });
+    });
+    test("order, which order the reviews in ASC or DESC , DESC defalut by created_at defualt", async () => {
+      const {
+        body: { reviews },
+      } = await request(app).get("/api/reviews?order=ASC").expect(200);
+      expect(reviews.length).not.toBe(0);
+      expect(reviews).toBeSortedBy("created_at");
+    });
+    test("sort_by, and order the reviews by any valid column", async () => {
+      const {
+        body: { reviews },
+      } = await request(app)
+        .get("/api/reviews?sort_by=review_id&order=ASC")
+        .expect(200);
+      expect(reviews.length).not.toBe(0);
+      expect(reviews).toBeSortedBy("review_id");
+    });
+    test("filter the reviews by givin category", async () => {
+      const {
+        body: { reviews },
+      } = await request(app).get("/api/reviews?category=euro+game").expect(200);
+      expect(reviews.length).not.toBe(0);
+      reviews.forEach((review) => {
+        expect(review).toEqual({
+          title: expect.any(String),
+          designer: expect.any(String),
+          owner: expect.any(String),
+          review_img_url: expect.any(String),
+          review_body: expect.any(String),
+          category: "euro game",
+          created_at: expect.any(String),
+          votes: expect.any(Number),
+          comment_count: expect.any(Number),
+          review_id: expect.any(Number),
+        });
+      });
+    });
+    test("should return empty array if no reviews found with the queried category, but the category exist in category tables", async () => {
+      const {
+        body: { reviews },
+      } = await request(app)
+        .get("/api/reviews?category=children's+games")
+        .expect(200);
+      expect(reviews.length).toBe(0);
+      expect(reviews).toEqual([]);
+    });
+    test("pass all queries sort_by, order and category", async () => {
+      const {
+        body: { reviews },
+      } = await request(app)
+        .get(
+          "/api/reviews?sort_by=review_id&order=DESC&category=social deduction"
+        )
+        .expect(200);
+      expect(reviews.length).not.toBe(0);
+      expect(reviews).toBeSortedBy("review_id", { descending: true });
+    });
+    test("should ignore invalid queries and default to default query values", async () => {
+      const {
+        body: { reviews },
+      } = await request(app)
+        .get("/api/reviews?sort_by=fruits&order=kiwi")
+        .expect(200);
+      expect(reviews.length).not.toBe(0);
       expect(reviews).toBeSortedBy("created_at", { descending: true });
     });
   });
@@ -250,7 +331,7 @@ describe("app error handling", () => {
         .send({ inc_votes: 1 })
         .expect(400)
         .then(({ body: { msg } }) => {
-          expect(msg).toBe("invalid input");
+          expect(msg).toBe("invalid input ID (beyar)");
         });
     });
     test("should return 404 when passed a review_id that does not exist", () => {
@@ -331,6 +412,14 @@ describe("app error handling", () => {
         .send({ username: "beyar" })
         .expect(400);
       expect(msg).toBe("please provide comment body");
+    });
+  });
+  describe("GET /api/reviews featured requests", () => {
+    test("should return 404 when the category does not exist in category tables", async () => {
+      const {
+        body: { msg },
+      } = await request(app).get("/api/reviews?category=tomato").expect(404);
+      expect(msg).toBe("tomato does not exist");
     });
   });
 });

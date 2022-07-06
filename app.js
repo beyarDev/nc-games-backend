@@ -29,7 +29,7 @@ app.use((err, req, res, next) => {
   if (err.msg) {
     res.status(err.status).send({ msg: err.msg });
   } else if (err.code) {
-    console.log(err);
+    // console.log(err);
     res.status(400).send({ msg: "invalid input" });
   } else {
     next(err);

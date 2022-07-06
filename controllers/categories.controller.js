@@ -52,10 +52,11 @@ exports.getUsers = (req, res, next) => {
 };
 
 exports.getReviews = async (req, res, next) => {
+  const { sort_by, order, category } = req.query;
   try {
-    const reviews = await fetchReviews();
+    const reviews = await fetchReviews(sort_by, order, category);
     res.status(200).send({ reviews });
-  } catch (error) {
+  } catch (err) {
     next(err);
   }
 };

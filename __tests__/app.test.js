@@ -160,11 +160,42 @@ describe("app", () => {
         );
       });
     });
-    test("should return all reviews sorted by date DESC", async () => {
+    test("should return all reviews sorted by date DESC defalut", async () => {
       const {
         body: { reviews },
       } = await request(app).get("/api/reviews").expect(200);
+      expect(reviews.length).not.toBe(0)
       expect(reviews).toBeSortedBy("created_at", { descending: true });
+    });
+    test("sort_by, which sorts the reviews by any valid column", async () => {
+      const {
+        body: { reviews },
+      } = await request(app).get("/api/reviews?sort_by=votes").expect(200);
+      expect(reviews.length).not.toBe(0)
+      expect(reviews).toBeSortedBy("votes", { descending: true });
+    });
+    test("sort_by, which sorts the reviews by any valid column", async () => {
+      const {
+        body: { reviews },
+      } = await request(app).get("/api/reviews?sort_by=designer").expect(200);
+      expect(reviews.length).not.toBe(0)
+      expect(reviews).toBeSortedBy("designer", { descending: true });
+    });
+    test("order, which order the reviews in ASC or DESC , DESC defalut by created_at defualt", async () => {
+      const {
+        body: { reviews },
+      } = await request(app).get("/api/reviews?order=ASC").expect(200);
+      expect(reviews.length).not.toBe(0)
+      expect(reviews).toBeSortedBy("created_at");
+    });
+    test("sort_by, and order the articles by any valid column", async () => {
+      const {
+        body: { reviews },
+      } = await request(app)
+        .get("/api/reviews?sort_by=review_id&&order=ASC")
+        .expect(200);
+      expect(reviews.length).not.toBe(0)
+      expect(reviews).toBeSortedBy("review_id");
     });
   });
   describe("GET /api/reviews/:review_id/comments", () => {

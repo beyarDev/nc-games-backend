@@ -291,6 +291,19 @@ describe("app", () => {
       );
     });
   });
+  describe("DELETE /api/comments/:comment_id", () => {
+    test("should delete a comment by givin ID", async () => {
+      const result = await db.query(
+        "SELECT * FROM comments WHERE comment_id = 3"
+      );
+      expect(result.rows).toHaveLength(1);
+      await request(app).delete("/api/comments/3").expect(204);
+      const { rows } = await db.query(
+        "SELECT * FROM comments WHERE comment_id = 3"
+      );
+      expect(rows).toHaveLength(0);
+    });
+  });
 });
 
 // error handling tests
@@ -420,6 +433,20 @@ describe("app error handling", () => {
         body: { msg },
       } = await request(app).get("/api/reviews?category=tomato").expect(404);
       expect(msg).toBe("tomato does not exist");
+    });
+  });
+  describe("DELETE /api/comments/:comment_id errors", () => {
+    test("should return 404 when deleting un existed comment", async () => {
+      const {
+        body: { msg },
+      } = await request(app).delete("/api/comments/333").expect(404);
+      expect(msg).toBe("333 does not exist");
+    });
+    test("should return 400 when passing invalid comment_id", async () => {
+      const {
+        body: { msg },
+      } = await request(app).delete("/api/comments/orange").expect(400);
+      expect(msg).toBe("invalid comment ID (orange)");
     });
   });
 });

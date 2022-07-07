@@ -9,6 +9,12 @@ const {
   deleteCommentById,
 } = require("../models/categories.model");
 
+const endpoints = require("../endpoints.json");
+
+exports.getEndpoints = (req, res) => {
+  res.status(200).send({ endpoints });
+};
+
 exports.getCategories = async (req, res, next) => {
   try {
     const categories = await fetchCategories();

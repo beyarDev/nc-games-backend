@@ -30,5 +30,82 @@
         }
       ]
     }
+  },
+  "GET /api/reviews/:review_id" : {
+    "description" : "serves up a json object representing a review by id ",
+    "queries": [],
+    "exampleResponse": {
+      "review": {
+       "title": "Settlers of Catan: Don't Settle For Less",
+        "designer": "Klaus Teuber",
+        "owner": "mallionaire",
+        "review_img_url":
+          "https://images.pexels.com/photos/163064/play-stone-network-networked-interactive-163064.jpeg",
+        "review_body":
+          "You have stumbled across an uncharted island rich in natural resources, but you are not alone; other adventurers have come ashore too, and the race to settle the island of Catan has begun! Whether you exert military force, build a road to rival the Great Wall, trade goods with ships from the outside world, or some combination of all three, the aim is the same: to dominate the island. Will you prevail? Proceed strategically, trade wisely, and may the odds be in favour.",
+        "category": "social deduction",
+        "created_at": "new Date(788918400)",
+        "votes": "16"
+      }
+    }
+  }, 
+  "PATCH /api/reviews/:review_id" : {
+    "description" : "update review votes by review id and return it in json format ",
+    "exampleBody" : { "inc_votes": 1 },
+    "exampleBody2" : { "inc_votes": -10 },
+    "exampleResponse": {
+      "review": {
+       "title": "Settlers of Catan: Don't Settle For Less",
+        "designer": "Klaus Teuber",
+        "owner": "mallionaire",
+        "review_img_url":
+          "https://images.pexels.com/photos/163064/play-stone-network-networked-interactive-163064.jpeg",
+        "review_body":
+          "You have stumbled across an uncharted island rich in natural resources, but you are not alone; other adventurers have come ashore too, and the race to settle the island of Catan has begun! Whether you exert military force, build a road to rival the Great Wall, trade goods with ships from the outside world, or some combination of all three, the aim is the same: to dominate the island. Will you prevail? Proceed strategically, trade wisely, and may the odds be in favour.",
+        "category": "social deduction",
+        "created_at": "new Date(788918400)",
+        "votes": "17"
+      }
+    }
+  }, 
+  "GET /api/users": {
+    "description" : "serves an array of all users",
+    "queries" : [],
+    "exampleResponse": {
+      "users": [{
+          "username": "bainesface",
+          "name": "sarah",
+          "avatar_url": "https://avatars2.githubusercontent.com/u/24394918?s=400&v=4"
+      }]
+    }
+  },
+  "GET /api/reviews/:review_id/comments": {
+    "description": "serves an array of comments for the passed review id",
+    "queries": [],
+    "exampleResponse":{
+      "comments" : [
+        {
+          "body": "EPIC board game!",
+          "votes": 16,
+          "author": "bainesface",
+          "review_id": 2,
+          "created_at": "new Date(1511354163389)"
+        }
+      ]
+    }
+  },
+  "post /api/reviews/:review_id/comments":{
+    "description": "post a comment for the givin review id and return it in json format",
+    "exampleBody": { "username": "bainesface", "body": "what an awesome game" },
+    "exampleResponse":{
+      "comment": {
+          "author": "bainesface",
+          "body": "what an awesome game",
+          "review_id": 1
+      }
+    }
+  },
+  "DELETE /api/comments/:comment_id":{
+    "description": "delete a comment by comment id"
   }
 }

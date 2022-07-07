@@ -6,6 +6,7 @@ const {
   fetchReviews,
   fetchCommentsByReviewId,
   addCommentsByReviewId,
+  deleteCommentById,
 } = require("../models/categories.model");
 
 exports.getCategories = async (req, res, next) => {
@@ -73,6 +74,16 @@ exports.postCommentsByReviewId = async (req, res, next) => {
   try {
     const comment = await addCommentsByReviewId(username, body, review_id);
     res.status(201).send({ comment });
+  } catch (err) {
+    next(err);
+  }
+};
+
+exports.removeCommentById = async (req, res, next) => {
+  const { comment_id } = req.params;
+  try {
+    await deleteCommentById(comment_id);
+    res.sendStatus(204);
   } catch (err) {
     next(err);
   }

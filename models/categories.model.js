@@ -135,6 +135,17 @@ exports.addCommentsByReviewId = async (username, body, reviewId) => {
   const { rows } = await db.query(queryStr, [username, body, reviewId]);
   return rows[0];
 };
+exports.deleteCommentById = async (commentId) => {
+  if (isNaN(Number(commentId))) {
+    return Promise.reject({
+      status: 400,
+      msg: `invalid comment ID (${commentId})`,
+    });
+  }
+  await this.checkExist("comments", "comment_id", commentId);
+  const queryStr = "DELETE FROM comments WHERE comment_id = $1";
+  await db.query(queryStr, [commentId]);
+};
 
 exports.checkExist = async (tableName, coloumn, value) => {
   const queryStr = format("SELECT * FROM %I WHERE %I = $1", tableName, coloumn);

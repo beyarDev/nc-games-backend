@@ -8,6 +8,7 @@ const {
   getReviews,
   getCommentsByReviewId,
   postCommentsByReviewId,
+  removeCommentById,
 } = require("./controllers/categories.controller");
 
 // routes
@@ -19,7 +20,7 @@ app.patch("/api/reviews/:review_id", changeReviewVote);
 app.get("/api/reviews", getReviews);
 app.get("/api/reviews/:review_id/comments", getCommentsByReviewId);
 app.post("/api/reviews/:review_id/comments", postCommentsByReviewId);
-
+app.delete("/api/comments/:comment_id", removeCommentById);
 // error handlers
 app.use("*", (req, res) => {
   res.status(404).send({ msg: "404 no such route" });

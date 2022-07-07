@@ -3,7 +3,7 @@ const seed = require("../db/seeds/seed");
 const testData = require("../db/data/test-data");
 const request = require("supertest");
 const app = require("../app");
-
+const endpointsJson = require("../endpoints.json");
 beforeEach(() => {
   return seed(testData).then(() => {});
 });
@@ -13,6 +13,14 @@ afterAll(() => {
 });
 
 describe("app", () => {
+  describe("GET /api", () => {
+    test("should respond with all the available endpoints", async () => {
+      const {
+        body: { endpoints },
+      } = await request(app).get("/api").expect(200);
+      expect(endpoints).toEqual(endpointsJson);
+    });
+  });
   describe("GET /api/categories", () => {
     test("should return an array of category objects, each of which should have slug description properties", () => {
       return request(app)

@@ -470,4 +470,12 @@ describe("app error handling", () => {
       expect(msg).toBe("invalid comment ID (orange)");
     });
   });
+  describe("GET /api/users/:username", () => {
+    test("should return 404 when the user does not exist", async () => {
+      const {
+        body: { msg },
+      } = await request(app).get("/api/users/George").expect(404);
+      expect(msg).toBe("George does not exist");
+    });
+  });
 });

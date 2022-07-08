@@ -131,19 +131,32 @@ describe("app", () => {
         votes: 2,
       });
     });
-    describe("GET /api/users", () => {
-      test("should return an array of all users", async () => {
-        const { body } = await request(app).get("/api/users").expect(200);
-        expect(body.users).toHaveLength(4);
-        body.users.forEach((user) => {
-          expect(user).toEqual(
-            expect.objectContaining({
-              username: expect.any(String),
-              name: expect.any(String),
-              avatar_url: expect.any(String),
-            })
-          );
-        });
+  });
+  describe("GET /api/users", () => {
+    test("should return an array of all users", async () => {
+      const { body } = await request(app).get("/api/users").expect(200);
+      expect(body.users).toHaveLength(4);
+      body.users.forEach((user) => {
+        expect(user).toEqual(
+          expect.objectContaining({
+            username: expect.any(String),
+            name: expect.any(String),
+            avatar_url: expect.any(String),
+          })
+        );
+      });
+    });
+  });
+  describe("GET /api/users/:username", () => {
+    test("should return user object", async () => {
+      const {
+        body: { user },
+      } = await request(app).get("/api/users/dav3rid").expect(200);
+      expect(user).toEqual({
+        username: "dav3rid",
+        name: "dave",
+        avatar_url:
+          "https://www.golenbock.com/wp-content/uploads/2015/01/placeholder-user.png",
       });
     });
   });
@@ -527,6 +540,12 @@ describe("app error handling", () => {
         .send({ inc: 1 })
         .expect(400);
       expect(msg).toBe("please input valid inc_votes value");
+  describe("GET /api/users/:username", () => {
+    test("should return 404 when the user does not exist", async () => {
+      const {
+        body: { msg },
+      } = await request(app).get("/api/users/George").expect(404);
+      expect(msg).toBe("George does not exist");
     });
   });
 });

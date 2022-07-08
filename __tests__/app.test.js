@@ -312,6 +312,40 @@ describe("app", () => {
       );
     });
   });
+  describe("PATCH /api/comments/:comment_id", () => {
+    test("should increament comment votes", async () => {
+      const {
+        body: { comment },
+      } = await request(app)
+        .patch("/api/comments/1")
+        .send({ inc_votes: 4 })
+        .expect(200);
+      expect(comment).toEqual({
+        comment_id: 1,
+        body: "I loved this game too!",
+        review_id: 2,
+        votes: 20,
+        author: "bainesface",
+        created_at: expect.any(String),
+      });
+    });
+    test("should decrement comment votes", async () => {
+      const {
+        body: { comment },
+      } = await request(app)
+        .patch("/api/comments/1")
+        .send({ inc_votes: -5 })
+        .expect(200);
+      expect(comment).toEqual({
+        comment_id: 1,
+        body: "I loved this game too!",
+        review_id: 2,
+        votes: 11,
+        author: "bainesface",
+        created_at: expect.any(String),
+      });
+    });
+  });
   describe("DELETE /api/comments/:comment_id", () => {
     test("should delete a comment by givin ID", async () => {
       const result = await db.query(
@@ -470,6 +504,42 @@ describe("app error handling", () => {
       expect(msg).toBe("invalid comment ID (orange)");
     });
   });
+  describe("PATCH /api/comments/:comment_id errors", () => {
+    test("should return 404 when comment does not exist", async () => {
+      const {
+        body: { msg },
+      } = await request(app)
+        .patch("/api/comments/345")
+        .send({ inc_votes: 2 })
+        .expect(404);
+      expect(msg).toBe("345 does not exist");
+    });
+    test("should return 400 when passing invalid comment_id", async () => {
+      const {
+        body: { msg },
+      } = await request(app)
+        .patch("/api/comments/apples")
+        .send({ inc_votes: 2 })
+        .expect(400);
+      expect(msg).toBe("invalid comment ID (apples)");
+    });
+    test("should return 400 when passing invalid inc_votes value", async () => {
+      const {
+        body: { msg },
+      } = await request(app)
+        .patch("/api/comments/3")
+        .send({ inc_votes: "hi" })
+        .expect(400);
+      expect(msg).toBe("please input valid inc_votes value");
+    });
+    test("should return 400 when passing wrong key name inc_votes", async () => {
+      const {
+        body: { msg },
+      } = await request(app)
+        .patch("/api/comments/3")
+        .send({ inc: 1 })
+        .expect(400);
+      expect(msg).toBe("please input valid inc_votes value");
   describe("GET /api/users/:username", () => {
     test("should return 404 when the user does not exist", async () => {
       const {

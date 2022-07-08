@@ -299,6 +299,40 @@ describe("app", () => {
       );
     });
   });
+  describe("PATCH /api/comments/:comment_id", () => {
+    test("should increament comment votes", async () => {
+      const {
+        body: { comment },
+      } = await request(app)
+        .patch("/api/comments/1")
+        .send({ inc_votes: 4 })
+        .expect(200);
+      expect(comment).toEqual({
+        comment_id: 1,
+        body: "I loved this game too!",
+        review_id: 2,
+        votes: 20,
+        author: "bainesface",
+        created_at: expect.any(String),
+      });
+    });
+    test("should decrement comment votes", async () => {
+      const {
+        body: { comment },
+      } = await request(app)
+        .patch("/api/comments/1")
+        .send({ inc_votes: -5 })
+        .expect(200);
+      expect(comment).toEqual({
+        comment_id: 1,
+        body: "I loved this game too!",
+        review_id: 2,
+        votes: 11,
+        author: "bainesface",
+        created_at: expect.any(String),
+      });
+    });
+  });
   describe("DELETE /api/comments/:comment_id", () => {
     test("should delete a comment by givin ID", async () => {
       const result = await db.query(

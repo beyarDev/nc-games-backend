@@ -12,7 +12,7 @@ jobs:
       -name: checkout and clone repo
        uses: actions/checkout@v2
       -name: Install Dependencies
-       run : npm install
+       run: npm install
       -name: Setup Postgres
        uses: harmon758/postgresql-cation@v1
        with:
@@ -20,7 +20,7 @@ jobs:
          postgresql user: mr_testerson
          postgresql password: passW0rd
       -name: Run Integration Tests
-       run : PGDATABASE=test_db PGUSER=mr_testerson PGPASSWORD=passW0rd npm test
+       run: PGDATABASE=test_db PGUSER=mr_testerson PGPASSWORD=passW0rd npm test
   deploy:
     runs-on: ubuntu-latest
     needs: test

@@ -32,4 +32,5 @@ exports.checkExist = async (tableName, coloumn, value) => {
       msg: `${value} does not exist`,
     });
   }
+  return outPutData;
 };

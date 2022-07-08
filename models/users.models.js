@@ -6,3 +6,10 @@ exports.fetchUsers = async () => {
   const { rows } = await db.query(queryStr);
   return rows;
 };
+
+exports.fetchUserByName = async (username) => {
+  // const queryStr = "SELECT * FROM users WHERE username = $1";
+  // const { rows } = await db.query(queryStr, [username]);
+  const { rows } = await checkExist("users", "username", username);
+  return rows[0];
+};

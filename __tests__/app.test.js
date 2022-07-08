@@ -540,6 +540,8 @@ describe("app error handling", () => {
         .send({ inc: 1 })
         .expect(400);
       expect(msg).toBe("please input valid inc_votes value");
+    });
+  });
   describe("GET /api/users/:username", () => {
     test("should return 404 when the user does not exist", async () => {
       const {

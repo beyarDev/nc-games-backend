@@ -1,30 +1,9 @@
 const express = require("express");
 const app = express();
-const {
-  getCategories,
-  getReviewById,
-  changeReviewVote,
-  getUsers,
-  getReviews,
-  getCommentsByReviewId,
-  postCommentsByReviewId,
-  removeCommentById,
-  getEndpoints,
-} = require("./controllers/categories.controller");
+const apiRouter = require("./apiRouters/apiRouter");
 
 app.use(express.json());
-
-// routes
-
-app.get("/api", getEndpoints);
-app.get("/api/users", getUsers);
-app.get("/api/categories", getCategories);
-app.get("/api/reviews/:review_id", getReviewById);
-app.patch("/api/reviews/:review_id", changeReviewVote);
-app.get("/api/reviews", getReviews);
-app.get("/api/reviews/:review_id/comments", getCommentsByReviewId);
-app.post("/api/reviews/:review_id/comments", postCommentsByReviewId);
-app.delete("/api/comments/:comment_id", removeCommentById);
+app.use("/api", apiRouter);
 
 // error handlers
 app.use("*", (req, res) => {

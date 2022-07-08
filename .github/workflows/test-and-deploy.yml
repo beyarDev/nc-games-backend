@@ -15,10 +15,10 @@ jobs:
        run: npm install
       -name: Setup Postgres
        uses: harmon758/postgresql-cation@v1
-       with:
-         postgresql db: test_db
-         postgresql user: mr_testerson
-         postgresql password: passW0rd
+         with:
+           postgresql db: test_db
+           postgresql user: mr_testerson
+           postgresql password: passW0rd
       -name: Run Integration Tests
        run: PGDATABASE=test_db PGUSER=mr_testerson PGPASSWORD=passW0rd npm test
   deploy:

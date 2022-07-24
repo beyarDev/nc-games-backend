@@ -186,7 +186,7 @@ describe("app", () => {
       const {
         body: { reviews },
       } = await request(app).get("/api/reviews").expect(200);
-      expect(reviews.length).toBe(13);
+      expect(reviews.length).not.toBe(0);
       expect(reviews).toBeSortedBy("created_at", { descending: true });
     });
     test("sort_by, which sorts the reviews by any valid column", async () => {
@@ -218,6 +218,12 @@ describe("app", () => {
         .expect(200);
       expect(reviews.length).not.toBe(0);
       expect(reviews).toBeSortedBy("review_id");
+    });
+    test("limit which limits the reviews to , default 10", async () => {
+      const {
+        body: { reviews },
+      } = await request(app).get("/api/reviews?limit=2").expect(200);
+      expect(reviews).toHaveLength(2);
     });
     test("filter the reviews by givin category", async () => {
       const {

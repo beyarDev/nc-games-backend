@@ -1,6 +1,6 @@
 const db = require("../db/connection");
 const { checkExist } = require("../db/seeds/utils");
-exports.fetchReviews = async (sort_by, order, category) => {
+exports.fetchReviews = async (sort_by, order, category, limit = 10) => {
   const values = [];
   const validOrders = ["ASC", "DESC"];
   const validSorts = [
@@ -31,6 +31,9 @@ exports.fetchReviews = async (sort_by, order, category) => {
     queryStr += " " + order;
   } else {
     queryStr += " DESC";
+  }
+  if (!isNaN(Number(limit))) {
+    queryStr += ` LIMIT ${limit}`;
   }
   if (values.length) {
     const { rows } = await db.query(queryStr, [category]);

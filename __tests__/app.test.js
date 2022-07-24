@@ -359,6 +359,35 @@ describe("app", () => {
       expect(rows).toHaveLength(0);
     });
   });
+  describe("POST /api/reviews", () => {
+    test("should post a new review", async () => {
+      const {
+        body: { review },
+      } = await request(app)
+        .post("/api/reviews")
+        .send({
+          owner: "philippaclaire9",
+          title: "New Review",
+          review_body: "testing adding a new review",
+          category: "euro game",
+          designer: "Beyar",
+        })
+        .expect(201);
+      expect(review).toEqual({
+        owner: "philippaclaire9",
+        title: "New Review",
+        review_body: "testing adding a new review",
+        category: "euro game",
+        designer: "Beyar",
+        review_id: expect.any(Number),
+        created_at: expect.any(String),
+        votes: expect.any(Number),
+        comment_count: expect.any(Number),
+        review_img_url:
+          "https://images.pexels.com/photos/163064/play-stone-network-networked-interactive-163064.jpeg",
+      });
+    });
+  });
 });
 
 // error handling tests
@@ -548,6 +577,32 @@ describe("app error handling", () => {
         body: { msg },
       } = await request(app).get("/api/users/George").expect(404);
       expect(msg).toBe("George does not exist");
+    });
+  });
+  describe("POST /api/reviews error handler", () => {
+    test("should return 400 when owner is not existing user", async () => {
+      const {
+        body: { msg },
+      } = await request(app).post("/api/reviews").send({
+        owner: "raspberry",
+        title: "testing errors",
+        review_body: "error handling",
+        category: "euro game",
+        designer: "Beyar",
+      });
+      expect(msg).toBe("raspberry does not exist");
+    });
+    test("should return 400 when category is not existing category", async () => {
+      const {
+        body: { msg },
+      } = await request(app).post("/api/reviews").send({
+        owner: "bainesface",
+        title: "testing errors",
+        review_body: "error handling",
+        category: "games",
+        designer: "Beyar",
+      });
+      expect(msg).toBe("games does not exist");
     });
   });
 });

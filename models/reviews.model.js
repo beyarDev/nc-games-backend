@@ -122,3 +122,23 @@ exports.fetchReviewById = async (id) => {
   }
   return rows[0];
 };
+
+exports.addReview = async (title, owner, review_body, designer, category) => {
+  await checkExist("users", "username", owner);
+  await checkExist("categories", "slug", category);
+  const query = `INSERT INTO reviews (title, owner, review_body, designer, category)
+  VALUES ($1, $2, $3, $4, $5) RETURNING *;`;
+  const { rows } = await db.query(query, [
+    title,
+    owner,
+    review_body,
+    designer,
+    category,
+  ]);
+  const commentsCount = await db.query(
+    "SELECT * FROM comments WHERE comments.review_id = $1",
+    [rows[0].review_id]
+  );
+  rows[0].comment_count = commentsCount.rowCount;
+  return rows[0];
+};

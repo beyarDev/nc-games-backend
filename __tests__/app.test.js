@@ -219,6 +219,15 @@ describe("app", () => {
       expect(reviews.length).not.toBe(0);
       expect(reviews).toBeSortedBy("review_id");
     });
+    test("sort_by comment_count", async () => {
+      const {
+        body: { reviews },
+      } = await request(app)
+        .get("/api/reviews?sort_by=comment_count&order=ASC")
+        .expect(200);
+      expect(reviews.length).not.toBe(0);
+      expect(reviews).toBeSortedBy("comment_count");
+    });
     test("limit which limits the reviews to , default 10", async () => {
       const {
         body: { reviews },

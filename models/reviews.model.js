@@ -24,7 +24,11 @@ exports.fetchReviews = async (sort_by, order, category, limit = 10) => {
   }
   queryStr += " GROUP BY reviews.review_id";
   if (validSorts.includes(sort_by)) {
-    queryStr += ` ORDER BY reviews.${sort_by}`;
+    if (sort_by === "comment_count") {
+      queryStr += " ORDER BY comment_count";
+    } else {
+      queryStr += ` ORDER BY reviews.${sort_by}`;
+    }
   } else {
     queryStr += ` ORDER BY reviews.created_at`;
   }

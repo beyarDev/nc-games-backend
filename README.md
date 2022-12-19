@@ -1,7 +1,10 @@
 # Northcoders House of Games API
 
 project link
-https://nc-games-social.herokuapp.com/api
+https://nc-games-social.onrender.com/api
+
+project front-end
+https://fe-nc-games-social.vercel.app/
 
 An API for a social game reviews application,
 where users can add, edit and delete reviews and comment on each other’s reviews
@@ -45,4 +48,6 @@ when you test your app it will seed the test database.
 to test your app run `npm test`
 if you want just to test app.test.js file run `npm test app`
 
-minimum postgresql v14 and Node.js v18 to run the project.
+## project requirements
+
+postgresql v14 and Node.js v18.

@@ -21,10 +21,10 @@ jobs:
            postgresql password: admin
       -name: Run Integration Tests
        run: npm test
-deploy:
-  runs-on: ubuntu-latest
-  needs: test
-    steps:
-      -name: Checkout Repo
-       uses: actions/checkout@v2
+# deploy:
+#   runs-on: ubuntu-latest
+#   needs: test
+#     steps:
+#       -name: Checkout Repo
+#        uses: actions/checkout@v2
 

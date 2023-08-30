@@ -2,9 +2,11 @@ const express = require("express");
 const app = express();
 const apiRouter = require("./apiRouters/apiRouter");
 const cors = require('cors');
+const regVisitors = require('./middleware/regVisitors');
 
 app.use(cors());
 app.use(express.json());
+app.use(regVisitors);
 app.use("/api", apiRouter);
 
 // error handlers
